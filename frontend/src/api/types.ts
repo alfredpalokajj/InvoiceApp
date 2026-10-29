@@ -1,4 +1,6 @@
-export type Role = 'Finance' | 'Courier' | 'Client';
+export type Role = 'SuperAdmin' | 'Finance' | 'Courier' | 'Client';
+
+export const ROLES: Role[] = ['SuperAdmin', 'Finance', 'Courier', 'Client'];
 
 export type InvoiceStatus = 'Created' | 'ReadyForDelivery' | 'InTransit' | 'Delivered' | 'Paid';
 
@@ -10,6 +12,20 @@ export interface User {
   email: string;
   role: Role;
   clientId: number | null;
+}
+
+export interface NewUserInput {
+  fullName: string;
+  email: string;
+  password: string;
+  role: Role;
+}
+
+/** The role can't change after creation. A null password keeps the current one. */
+export interface UserUpdateInput {
+  fullName: string;
+  email: string;
+  password: string | null;
 }
 
 export interface LoginResponse {

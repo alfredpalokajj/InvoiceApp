@@ -13,6 +13,8 @@ import { InvoiceFormPage } from './pages/finance/InvoiceFormPage';
 import { CourierHomePage } from './pages/courier/CourierHomePage';
 import { CourierInvoicePage } from './pages/courier/CourierInvoicePage';
 import { ClientHomePage } from './pages/client/ClientHomePage';
+import { UserFormPage } from './pages/admin/UserFormPage';
+import { UsersPage } from './pages/admin/UsersPage';
 
 function HomeRedirect() {
   const { user } = useAuth();
@@ -40,7 +42,7 @@ export default function App() {
       <Route
         path="/finance"
         element={
-          <RequireRole role="Finance">
+          <RequireRole roles={['Finance', 'SuperAdmin']}>
             <Layout />
           </RequireRole>
         }
@@ -59,7 +61,7 @@ export default function App() {
       <Route
         path="/courier"
         element={
-          <RequireRole role="Courier">
+          <RequireRole roles={['Courier']}>
             <Layout />
           </RequireRole>
         }
@@ -72,12 +74,26 @@ export default function App() {
       <Route
         path="/client"
         element={
-          <RequireRole role="Client">
+          <RequireRole roles={['Client']}>
             <Layout />
           </RequireRole>
         }
       >
         <Route index element={<ClientHomePage />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
+
+      <Route
+        path="/admin"
+        element={
+          <RequireRole roles={['SuperAdmin']}>
+            <Layout />
+          </RequireRole>
+        }
+      >
+        <Route index element={<UsersPage />} />
+        <Route path="users/new" element={<UserFormPage />} />
+        <Route path="users/:id" element={<UserFormPage />} />
         <Route path="*" element={<NotFound />} />
       </Route>
 

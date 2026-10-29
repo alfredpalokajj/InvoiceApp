@@ -88,6 +88,13 @@ export function useAuth() {
   return ctx;
 }
 
+const homePaths: Record<Role, string> = {
+  SuperAdmin: '/finance',
+  Finance: '/finance',
+  Courier: '/courier',
+  Client: '/client',
+};
+
 export function homePath(role: Role) {
-  return role === 'Finance' ? '/finance' : role === 'Courier' ? '/courier' : '/client';
+  return homePaths[role];
 }

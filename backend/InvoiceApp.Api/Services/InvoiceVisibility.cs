@@ -9,7 +9,7 @@ public static class InvoiceVisibility
     /// </summary>
     public static IQueryable<Invoice> VisibleTo(this IQueryable<Invoice> invoices, CurrentUser user) => user.Role switch
     {
-        Role.Finance => invoices,
+        Role.Finance or Role.SuperAdmin => invoices,
         Role.Courier => invoices.Where(i => i.CourierId == user.Id && i.Status >= InvoiceStatus.ReadyForDelivery),
         Role.Client => invoices.Where(i => i.ClientId == user.ClientId && i.Status >= InvoiceStatus.Delivered),
         _ => invoices.Where(_ => false)

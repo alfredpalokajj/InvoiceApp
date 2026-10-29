@@ -17,7 +17,7 @@ public class InvoiceHub : Hub
     public override async Task OnConnectedAsync()
     {
         var user = Context.User!.ToCurrentUser();
-        if (user.Role == Role.Finance)
+        if (user.Role.HasFinanceAccess())
             await Groups.AddToGroupAsync(Context.ConnectionId, FinanceGroup);
         await Groups.AddToGroupAsync(Context.ConnectionId, UserGroup(user.Id));
         await base.OnConnectedAsync();

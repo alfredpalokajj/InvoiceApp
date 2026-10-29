@@ -59,8 +59,9 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
   );
 }
 
+// text-base on phones: iOS Safari zooms into any focused field smaller than 16px.
 const inputClass =
-  'block w-full rounded-lg border-0 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 ' +
+  'block w-full rounded-lg border-0 bg-white px-3 py-2 text-base text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 sm:text-sm ' +
   'placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 disabled:bg-slate-100';
 
 export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {

@@ -24,6 +24,38 @@ export function CourierInvoicePage() {
   // Works without an API key; on phones it opens the Google Maps app.
   const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination.lat},${destination.lng}`;
 
+  // The step the courier is here to take. Shown in the sidebar on wide screens, and right under the map
+  // on phones and tablets so it isn't buried below the invoice details.
+  const actions = (inv.status === 'ReadyForDelivery' || inv.status === 'InTransit') && (
+    <Card className="p-5">
+      {inv.status === 'ReadyForDelivery' && (
+        <Button
+          className="w-full py-3 text-base"
+          loading={transition.isPending}
+          onClick={() => transition.mutate({ id: inv.id, action: 'start' })}
+        >
+          {t('courier.start')}
+        </Button>
+      )}
+      {inv.status === 'InTransit' && (
+        <ConfirmAction
+          variant="success"
+          className="w-full py-3 text-base"
+          label={t('courier.deliver')}
+          question={t('courier.confirmDeliver')}
+          confirmLabel={t('courier.confirmDeliverYes')}
+          loading={transition.isPending}
+          onConfirm={() => transition.mutate({ id: inv.id, action: 'deliver' })}
+        />
+      )}
+      {transition.error != null && (
+        <div className="mt-3">
+          <ErrorAlert error={transition.error} />
+        </div>
+      )}
+    </Card>
+  );
+
   return (
     <>
       <PageHeader
@@ -76,39 +108,12 @@ export function CourierInvoicePage() {
             </div>
           </Card>
 
+          {actions && <div className="lg:hidden">{actions}</div>}
           <InvoiceSummary invoice={inv} viewer="Courier" />
         </div>
 
         <div className="space-y-6">
-          {(inv.status === 'ReadyForDelivery' || inv.status === 'InTransit') && (
-            <Card className="p-5">
-              {inv.status === 'ReadyForDelivery' && (
-                <Button
-                  className="w-full py-3 text-base"
-                  loading={transition.isPending}
-                  onClick={() => transition.mutate({ id: inv.id, action: 'start' })}
-                >
-                  {t('courier.start')}
-                </Button>
-              )}
-              {inv.status === 'InTransit' && (
-                <ConfirmAction
-                  variant="success"
-                  className="w-full py-3 text-base"
-                  label={t('courier.deliver')}
-                  question={t('courier.confirmDeliver')}
-                  confirmLabel={t('courier.confirmDeliverYes')}
-                  loading={transition.isPending}
-                  onConfirm={() => transition.mutate({ id: inv.id, action: 'deliver' })}
-                />
-              )}
-              {transition.error != null && (
-                <div className="mt-3">
-                  <ErrorAlert error={transition.error} />
-                </div>
-              )}
-            </Card>
-          )}
+          {actions && <div className="hidden lg:block">{actions}</div>}
           <Card className="p-5">
             <StatusTimeline invoice={inv} />
             <DownloadPdfButton invoice={inv} className="mt-5 w-full" />

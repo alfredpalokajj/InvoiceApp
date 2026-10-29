@@ -8,6 +8,7 @@ import type { Role } from '../api/types';
 
 const DEMO_PASSWORD = 'Demo123!';
 const demoAccounts: { email: string; role: Role }[] = [
+  { email: 'admin@demo.com', role: 'SuperAdmin' },
   { email: 'finance@demo.com', role: 'Finance' },
   { email: 'postieri1@demo.com', role: 'Courier' },
   { email: 'postieri2@demo.com', role: 'Courier' },

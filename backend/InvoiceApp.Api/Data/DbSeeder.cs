@@ -10,14 +10,21 @@ public static class DbSeeder
 
     public static void Seed(AppDbContext db, IPasswordHasher<User> hasher)
     {
-        if (db.Users.Any()) return;
-
         User NewUser(string name, string email, Role role, Client? client = null)
         {
             var u = new User { FullName = name, Email = email, Role = role, Client = client };
             u.PasswordHash = hasher.HashPassword(u, DemoPassword);
             return u;
         }
+
+        // Checked separately so databases seeded before the SuperAdmin role existed still get one.
+        if (!db.Users.Any(u => u.Role == Role.SuperAdmin))
+        {
+            db.Users.Add(NewUser("Super Admin", "admin@demo.com", Role.SuperAdmin));
+            db.SaveChanges();
+        }
+
+        if (db.Users.Any(u => u.Role != Role.SuperAdmin)) return;
 
         var alfa = new Client
         {

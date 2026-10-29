@@ -4,7 +4,17 @@ public enum Role
 {
     Finance,
     Courier,
-    Client
+    Client,
+    SuperAdmin
+}
+
+/// <summary>SuperAdmin can do everything Finance can, on top of managing users.</summary>
+public static class RoleGroups
+{
+    /// <summary>For <c>[Authorize(Roles = ...)]</c>.</summary>
+    public const string Finance = nameof(Role.Finance) + "," + nameof(Role.SuperAdmin);
+
+    public static bool HasFinanceAccess(this Role role) => role is Role.Finance or Role.SuperAdmin;
 }
 
 /// <summary>

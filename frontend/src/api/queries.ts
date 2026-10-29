@@ -1,6 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './client';
-import type { Client, ClientInput, Courier, CourierInput, Invoice, InvoiceInput } from './types';
+import type {
+  Client,
+  ClientInput,
+  Courier,
+  CourierInput,
+  Invoice,
+  InvoiceInput,
+  NewUserInput,
+  User,
+  UserUpdateInput,
+} from './types';
 
 // Every invoice query key starts with 'invoices' so one realtime event can refresh them all.
 export const invoiceKeys = {
@@ -106,5 +116,36 @@ export function useCreateCourier() {
   return useMutation({
     mutationFn: async (input: CourierInput) => (await api.post<Courier>('/couriers', input)).data,
     onSuccess: () => qc.invalidateQueries({ queryKey: ['couriers'] }),
+  });
+}
+
+export function useUsers() {
+  return useQuery({
+    queryKey: ['users'],
+    queryFn: async () => (await api.get<User[]>('/users')).data,
+  });
+}
+
+export function useUser(id: number | undefined) {
+  return useQuery({
+    queryKey: ['users', id],
+    queryFn: async () => (await api.get<User>(`/users/${id}`)).data,
+    enabled: id !== undefined,
+  });
+}
+
+/** Create takes a role; update never changes it. */
+export function useSaveUser(id?: number) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: NewUserInput | UserUpdateInput) =>
+      id ? (await api.put<User>(`/users/${id}`, input)).data : (await api.post<User>('/users', input)).data,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['users'] });
+      // New couriers show up in courier pickers; client users share name and email with their client.
+      qc.invalidateQueries({ queryKey: ['couriers'] });
+      qc.invalidateQueries({ queryKey: ['clients'] });
+      qc.invalidateQueries({ queryKey: invoiceKeys.all });
+    },
   });
 }

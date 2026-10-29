@@ -8,6 +8,7 @@ This app replaces manual invoicing. It tracks each invoice from creation, throug
 
 | Role | What they can do |
 |---|---|
+| **SuperAdmin** (Superadministrator) | Everything Finance can do. Also creates and edits user accounts of every role: name, email and password. The role is set when an account is created and can't change afterwards. Client accounts are created on the Clients page, because they need an address and location. |
 | **Finance** (Financat) | Add clients and pin their location on a map. Add couriers. Create and edit invoices while they are *Created*. Download PDFs. Assign a courier and mark *Ready for Delivery*. See every invoice, with live status updates. |
 | **Courier** (Postieri) | See only invoices assigned to them; *Ready for Delivery* appears as *Pending*. See their own live location and the client's location. Mark *In Transit*, then *Delivered*. |
 | **Client** (Klienti) | See only their own invoices, once delivered. Confirm payment, which moves the invoice to *Paid*. |
@@ -50,6 +51,7 @@ All demo accounts use the password `Demo123!`. In dev mode, the login page also 
 
 | Email | Role |
 |---|---|
+| admin@demo.com | SuperAdmin |
 | finance@demo.com | Finance |
 | postieri1@demo.com | Courier (Arben Krasniqi) |
 | postieri2@demo.com | Courier (Blerim Gashi) |
@@ -76,6 +78,7 @@ The integration tests run the real API against a private in-memory SQLite databa
 - out-of-order transitions, which return `409`
 - courier isolation and client isolation
 - role checks on Finance endpoints
+- SuperAdmin user management and Finance access
 - PDF access
 - input validation
 
@@ -96,7 +99,7 @@ backend/
       InvoicePdfService.cs        sq/en PDF
       TokenService.cs             JWT issuing
     Hubs/InvoiceHub.cs            /hubs/invoices
-    Controllers/                  auth, clients, couriers, invoices
+    Controllers/                  auth, clients, couriers, invoices, users
   InvoiceApp.Tests/               integration tests
 frontend/src/
   api/                            axios client, types, React Query hooks
@@ -104,7 +107,7 @@ frontend/src/
   i18n/                           sq.ts (default), en.ts (type-checked against sq)
   maps/                           LocationPicker / DeliveryMap (Google + Leaflet)
   realtime/useInvoiceHub.ts       SignalR → refetch invoices
-  pages/finance|courier|client/   screens per role
+  pages/finance|courier|client|admin/  screens per role (admin = SuperAdmin user management)
 ```
 
 ## API summary
@@ -113,15 +116,17 @@ frontend/src/
 |---|---|---|
 | POST | `/api/auth/login` | anyone |
 | GET | `/api/auth/me` | signed in |
-| GET, POST | `/api/clients` | Finance |
-| GET, PUT | `/api/clients/{id}` | Finance |
-| GET, POST | `/api/couriers` | Finance |
+| GET, POST | `/api/users` | SuperAdmin (POST: SuperAdmin, Finance or Courier role) |
+| GET, PUT | `/api/users/{id}` | SuperAdmin (PUT: name, email, optional new password) |
+| GET, POST | `/api/clients` | Finance, SuperAdmin |
+| GET, PUT | `/api/clients/{id}` | Finance, SuperAdmin |
+| GET, POST | `/api/couriers` | Finance, SuperAdmin |
 | GET | `/api/invoices` | all roles, each filtered to what that role may see |
 | GET | `/api/invoices/{id}` | all roles, each filtered to what that role may see |
 | GET | `/api/invoices/{id}/pdf?lang=sq\|en` | all roles, each filtered to what that role may see |
-| POST | `/api/invoices` | Finance |
-| PUT | `/api/invoices/{id}` | Finance, only while the invoice is *Created* |
-| POST | `/api/invoices/{id}/ready` with body `{ courierId }` | Finance |
+| POST | `/api/invoices` | Finance, SuperAdmin |
+| PUT | `/api/invoices/{id}` | Finance, SuperAdmin, only while the invoice is *Created* |
+| POST | `/api/invoices/{id}/ready` with body `{ courierId }` | Finance, SuperAdmin |
 | POST | `/api/invoices/{id}/start` | assigned Courier |
 | POST | `/api/invoices/{id}/deliver` | assigned Courier |
 | POST | `/api/invoices/{id}/pay` | owning Client |
@@ -130,6 +135,7 @@ Errors are returned as ProblemDetails with a stable `code` field (for example `i
 
 ## Before going to production
 
+- **First SuperAdmin.** Only the Development seeder creates accounts (`admin@demo.com`). In production, create the first SuperAdmin yourself, for example with a one-off script or SQL insert. After that, they can create everyone else from the Users page.
 - **JWT key.** Set `Jwt__Key` (32+ characters) as an environment variable. The key in `appsettings.Development.json` is for development only.
 - **Database.** Switch from SQLite to SQL Server or PostgreSQL by changing the EF provider and connection string. Run migrations as a deploy step; the app applies them automatically only in Development.
 - **HTTPS.** Serve the app over HTTPS. Browsers only allow geolocation on secure origins, so the courier location needs it on phones (localhost is exempt).

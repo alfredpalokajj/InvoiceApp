@@ -37,7 +37,7 @@ export function CourierHomePage() {
               role="tab"
               aria-selected={active}
               onClick={() => setTab(key)}
-              className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition ${
+              className={`flex flex-1 flex-col items-center justify-center gap-1 rounded-lg px-2 py-2 text-sm font-semibold transition sm:flex-row sm:gap-2 sm:px-3 ${
                 active ? 'bg-white text-blue-800 shadow-sm' : 'text-slate-600 hover:text-slate-900'
               }`}
             >

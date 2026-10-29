@@ -10,9 +10,13 @@ const sq = {
     newInvoice: 'Faturë e re',
     myDeliveries: 'Dërgesat e mia',
     myInvoices: 'Faturat e mia',
+    users: 'Përdoruesit',
     logout: 'Dilni',
+    menu: 'Menyja',
+    closeMenu: 'Mbyll menynë',
   },
   roles: {
+    SuperAdmin: 'Superadministrator',
     Finance: 'Financat',
     Courier: 'Postieri',
     Client: 'Klienti',
@@ -121,6 +125,25 @@ const sq = {
       added: 'Postieri u shtua.',
     },
   },
+  admin: {
+    users: {
+      title: 'Përdoruesit',
+      subtitle: 'Llogaritë e të gjitha roleve. Roli caktohet kur krijohet llogaria.',
+      new: 'Përdorues i ri',
+      edit: 'Ndrysho përdoruesin',
+      fullName: 'Emri i plotë',
+      email: 'Email-i',
+      role: 'Roli',
+      password: 'Fjalëkalimi',
+      newPassword: 'Fjalëkalim i ri',
+      newPasswordHint: 'Lëreni bosh për ta mbajtur fjalëkalimin aktual.',
+      roleFixed: 'Roli nuk mund të ndryshohet pasi krijohet llogaria.',
+      clientHint: 'Llogaritë e klientëve krijohen te faqja Klientët, bashkë me adresën.',
+      addClient: 'Shto klient',
+      editClient: 'Ndrysho adresën dhe lokacionin e klientit',
+      empty: 'Nuk ka përdorues me këtë rol.',
+    },
+  },
   courier: {
     title: 'Dërgesat e mia',
     subtitle: 'Faturat që ju janë caktuar për dorëzim.',
@@ -179,6 +202,7 @@ const sq = {
     invalid_client: 'Klienti i zgjedhur nuk ekziston.',
     email_taken: 'Ky email është tashmë në përdorim.',
     invalid_credentials: 'Email-i ose fjalëkalimi është i gabuar.',
+    invalid_role: 'Llogaritë e klientëve krijohen te faqja Klientët, bashkë me adresën.',
   },
 };
 

@@ -13,9 +13,13 @@ const en: typeof sq = {
     newInvoice: 'New invoice',
     myDeliveries: 'My deliveries',
     myInvoices: 'My invoices',
+    users: 'Users',
     logout: 'Log out',
+    menu: 'Menu',
+    closeMenu: 'Close menu',
   },
   roles: {
+    SuperAdmin: 'Super admin',
     Finance: 'Finance',
     Courier: 'Courier',
     Client: 'Client',
@@ -124,6 +128,25 @@ const en: typeof sq = {
       added: 'Courier added.',
     },
   },
+  admin: {
+    users: {
+      title: 'Users',
+      subtitle: 'Accounts of every role. The role is set when the account is created.',
+      new: 'New user',
+      edit: 'Edit user',
+      fullName: 'Full name',
+      email: 'Email',
+      role: 'Role',
+      password: 'Password',
+      newPassword: 'New password',
+      newPasswordHint: 'Leave empty to keep the current password.',
+      roleFixed: 'The role can’t be changed after the account is created.',
+      clientHint: 'Client accounts are created on the Clients page, together with their address.',
+      addClient: 'Add client',
+      editClient: 'Edit the client’s address and location',
+      empty: 'No users with this role.',
+    },
+  },
   courier: {
     title: 'My deliveries',
     subtitle: 'Invoices assigned to you for delivery.',
@@ -182,6 +205,7 @@ const en: typeof sq = {
     invalid_client: 'The selected client does not exist.',
     email_taken: 'This email is already in use.',
     invalid_credentials: 'Wrong email or password.',
+    invalid_role: 'Client accounts are created on the Clients page, together with their address.',
   },
 };
 

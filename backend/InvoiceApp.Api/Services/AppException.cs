@@ -36,6 +36,10 @@ public static class Errors
     public static AppException EmailTaken() =>
         new(StatusCodes.Status409Conflict, "email_taken", "This email is already in use.");
 
+    public static AppException InvalidRole() =>
+        new(StatusCodes.Status400BadRequest, "invalid_role",
+            "Client accounts are created from the Clients page, together with their address.");
+
     public static AppException InvalidCredentials() =>
         new(StatusCodes.Status401Unauthorized, "invalid_credentials", "Wrong email or password.");
 }
