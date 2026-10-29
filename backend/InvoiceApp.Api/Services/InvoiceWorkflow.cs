@@ -1,3 +1,4 @@
+using System.Data;
 using InvoiceApp.Api.Contracts;
 using InvoiceApp.Api.Data;
 using InvoiceApp.Api.Domain;
@@ -20,7 +21,6 @@ public class InvoiceWorkflow(AppDbContext db, InvoiceNotifier notifier, TimeProv
         var issueDate = req.IssueDate ?? DateOnly.FromDateTime(now);
         var invoice = new Invoice
         {
-            Number = await NextNumberAsync(issueDate.Year, ct),
             ClientId = req.ClientId,
             Amount = req.Amount,
             Currency = NormalizeCurrency(req.Currency),
@@ -31,7 +31,15 @@ public class InvoiceWorkflow(AppDbContext db, InvoiceNotifier notifier, TimeProv
             CreatedAt = now
         };
         db.Invoices.Add(invoice);
-        await db.SaveChangesAsync(ct);
+        // Numbers are "last + 1", so reading the last one and inserting must be a single step, or invoices created
+        // at the same moment pick the same number. On SQLite a Serializable transaction starts with BEGIN IMMEDIATE:
+        // it takes the write lock before the read, so concurrent creates wait their turn here.
+        await using (var tx = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable, ct))
+        {
+            invoice.Number = await NextNumberAsync(issueDate.Year, ct);
+            await db.SaveChangesAsync(ct);
+            await tx.CommitAsync(ct);
+        }
         await notifier.InvoiceChangedAsync(invoice, ct);
         return invoice;
     }

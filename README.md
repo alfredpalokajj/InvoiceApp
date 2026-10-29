@@ -76,6 +76,7 @@ The integration tests run the real API against a private in-memory SQLite databa
 
 - every allowed status transition
 - out-of-order transitions, which return `409`
+- unique invoice numbers when several invoices are created at the same moment
 - courier isolation and client isolation
 - role checks on Finance endpoints
 - SuperAdmin user management and Finance access
@@ -137,7 +138,7 @@ Errors are returned as ProblemDetails with a stable `code` field (for example `i
 
 - **First SuperAdmin.** Only the Development seeder creates accounts (`admin@demo.com`). In production, create the first SuperAdmin yourself, for example with a one-off script or SQL insert. After that, they can create everyone else from the Users page.
 - **JWT key.** Set `Jwt__Key` (32+ characters) as an environment variable. The key in `appsettings.Development.json` is for development only.
-- **Database.** Switch from SQLite to SQL Server or PostgreSQL by changing the EF provider and connection string. Run migrations as a deploy step; the app applies them automatically only in Development.
+- **Database.** Switch from SQLite to SQL Server or PostgreSQL by changing the EF provider and connection string. Run migrations as a deploy step; the app applies them automatically only in Development. Invoice numbers are assigned inside a Serializable transaction, which on SQLite takes the write lock up front, so invoices created at the same moment never share a number. On SQL Server or PostgreSQL, the same transaction can fail with a serialization error under heavy concurrency, so add a retry, or switch to a database sequence.
 - **HTTPS.** Serve the app over HTTPS. Browsers only allow geolocation on secure origins, so the courier location needs it on phones (localhost is exempt).
 - **Geocoding.** Nominatim's free service limits usage, so use a Google key or your own geocoder for real traffic.
 - **Payment.** "Pay" records the client's confirmation; there is no payment gateway in this MVP.

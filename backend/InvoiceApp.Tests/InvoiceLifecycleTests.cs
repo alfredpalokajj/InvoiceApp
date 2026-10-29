@@ -81,6 +81,21 @@ public class InvoiceLifecycleTests(ApiFactory factory) : IClassFixture<ApiFactor
     }
 
     [Fact]
+    public async Task Invoices_created_at_the_same_time_all_get_different_numbers()
+    {
+        var s = await factory.CreateScenarioAsync();
+        var due = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30));
+
+        var responses = await Task.WhenAll(Enumerable.Range(0, 10).Select(_ =>
+            s.Finance.PostAsJsonAsync("/api/invoices",
+                new SaveInvoiceRequest(s.ClientXInfo.Id, 10m, "EUR", "Concurrent", null, due))));
+
+        var invoices = new List<InvoiceDto>();
+        foreach (var res in responses) invoices.Add(await res.ReadAsync<InvoiceDto>(HttpStatusCode.Created));
+        Assert.Equal(invoices.Count, invoices.Select(i => i.Number).Distinct().Count());
+    }
+
+    [Fact]
     public async Task Marking_ready_requires_a_real_courier()
     {
         var s = await factory.CreateScenarioAsync();
