@@ -11,7 +11,7 @@ namespace InvoiceApp.Api.Controllers;
 
 [ApiController]
 [Route("api/couriers")]
-[Authorize(Roles = nameof(Role.Finance))]
+[Authorize(Roles = RoleGroups.Finance)]
 public class CouriersController(AppDbContext db, IPasswordHasher<User> hasher) : ControllerBase
 {
     [HttpGet]

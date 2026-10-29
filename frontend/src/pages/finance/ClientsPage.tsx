@@ -30,7 +30,22 @@ export function ClientsPage() {
         <EmptyState>{t('finance.clients.empty')}</EmptyState>
       ) : (
         <Card>
-          <div className="overflow-x-auto">
+          <ul className="divide-y divide-slate-100 md:hidden">
+            {clients.data.map((c) => (
+              <li key={c.id}>
+                <Link to={`/finance/clients/${c.id}`} className="block px-4 py-3 transition hover:bg-slate-50 active:bg-slate-100">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="font-medium text-slate-900">{c.name}</span>
+                    <span className="text-sm font-semibold text-blue-700">{t('common.edit')}</span>
+                  </div>
+                  <p className="truncate text-sm text-slate-600">{c.email}</p>
+                  <p className="text-sm text-slate-600">{c.address}</p>
+                  {c.phone && <p className="text-sm text-slate-500">{c.phone}</p>}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="hidden overflow-x-auto md:block">
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <tr>

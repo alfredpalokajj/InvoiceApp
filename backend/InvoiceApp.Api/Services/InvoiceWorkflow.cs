@@ -13,7 +13,7 @@ public class InvoiceWorkflow(AppDbContext db, InvoiceNotifier notifier, TimeProv
 {
     public async Task<Invoice> CreateAsync(SaveInvoiceRequest req, CurrentUser user, CancellationToken ct)
     {
-        Require(user, Role.Finance);
+        RequireFinance(user);
         await EnsureClientExistsAsync(req.ClientId, ct);
 
         var now = clock.GetUtcNow().UtcDateTime;
@@ -38,7 +38,7 @@ public class InvoiceWorkflow(AppDbContext db, InvoiceNotifier notifier, TimeProv
 
     public async Task<Invoice> UpdateAsync(int id, SaveInvoiceRequest req, CurrentUser user, CancellationToken ct)
     {
-        Require(user, Role.Finance);
+        RequireFinance(user);
         var invoice = await FindVisibleAsync(id, user, ct);
         if (invoice.Status != InvoiceStatus.Created) throw Errors.NotEditable();
         await EnsureClientExistsAsync(req.ClientId, ct);
@@ -56,7 +56,7 @@ public class InvoiceWorkflow(AppDbContext db, InvoiceNotifier notifier, TimeProv
 
     public async Task<Invoice> MarkReadyAsync(int id, int courierId, CurrentUser user, CancellationToken ct)
     {
-        Require(user, Role.Finance);
+        RequireFinance(user);
         var courierExists = await db.Users.AnyAsync(u => u.Id == courierId && u.Role == Role.Courier, ct);
         if (!courierExists) throw Errors.InvalidCourier();
 
@@ -130,5 +130,10 @@ public class InvoiceWorkflow(AppDbContext db, InvoiceNotifier notifier, TimeProv
     private static void Require(CurrentUser user, Role role)
     {
         if (user.Role != role) throw Errors.Forbidden();
+    }
+
+    private static void RequireFinance(CurrentUser user)
+    {
+        if (!user.Role.HasFinanceAccess()) throw Errors.Forbidden();
     }
 }

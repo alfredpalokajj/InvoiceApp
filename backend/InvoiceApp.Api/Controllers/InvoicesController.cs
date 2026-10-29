@@ -34,7 +34,7 @@ public class InvoicesController(AppDbContext db, InvoiceWorkflow workflow, Invoi
     }
 
     [HttpPost]
-    [Authorize(Roles = nameof(Role.Finance))]
+    [Authorize(Roles = RoleGroups.Finance)]
     public async Task<ActionResult<InvoiceDto>> Create(SaveInvoiceRequest req, CancellationToken ct)
     {
         var invoice = await workflow.CreateAsync(req, Me, ct);
@@ -42,7 +42,7 @@ public class InvoicesController(AppDbContext db, InvoiceWorkflow workflow, Invoi
     }
 
     [HttpPut("{id:int}")]
-    [Authorize(Roles = nameof(Role.Finance))]
+    [Authorize(Roles = RoleGroups.Finance)]
     public async Task<InvoiceDto> Update(int id, SaveInvoiceRequest req, CancellationToken ct)
     {
         await workflow.UpdateAsync(id, req, Me, ct);
@@ -50,7 +50,7 @@ public class InvoicesController(AppDbContext db, InvoiceWorkflow workflow, Invoi
     }
 
     [HttpPost("{id:int}/ready")]
-    [Authorize(Roles = nameof(Role.Finance))]
+    [Authorize(Roles = RoleGroups.Finance)]
     public async Task<InvoiceDto> MarkReady(int id, MarkReadyRequest req, CancellationToken ct)
     {
         await workflow.MarkReadyAsync(id, req.CourierId, Me, ct);

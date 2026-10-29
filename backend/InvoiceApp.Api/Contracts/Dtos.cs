@@ -14,6 +14,20 @@ public record UserDto(int Id, string FullName, string Email, Role Role, int? Cli
 
 public record LoginResponse(string Token, UserDto User);
 
+// ---- Users ----
+
+public record CreateUserRequest(
+    [Required, StringLength(200)] string FullName,
+    [Required, EmailAddress, StringLength(200)] string Email,
+    [Required, MinLength(6)] string Password,
+    Role Role);
+
+/// <summary>The role is fixed at creation. A null password keeps the current one.</summary>
+public record UpdateUserRequest(
+    [Required, StringLength(200)] string FullName,
+    [Required, EmailAddress, StringLength(200)] string Email,
+    [MinLength(6)] string? Password);
+
 // ---- Clients ----
 
 public record ClientDto(
